@@ -1,6 +1,8 @@
 package com.panthi.journalApp.controller;
 
 import com.panthi.journalApp.entity.JournalEntry;
+import com.panthi.journalApp.service.JournalEntryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -10,40 +12,34 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/journal")
-public class JournalEntryController {
-    private final Map<Long, JournalEntry> JournalEntries = new HashMap<>();
+public class JournalEntryControllerV2 {
+
+    @Autowired
+    private JournalEntryService journalEntryService;
 
     @GetMapping
     public List<JournalEntry> getAll(){
-        return new ArrayList<>(JournalEntries.values());
+        return journalEntryService.getAll();
     }
     @PostMapping
     public boolean createEntry(@RequestBody JournalEntry myEntry){
-        JournalEntries.put(myEntry.getId(), myEntry);
+        journalEntryService.saveEntry(myEntry);
         return true;
     }
     @GetMapping("{myId}")
     public JournalEntry getJournalById(@PathVariable Long myId){
-        return JournalEntries.get(myId);
+        return null;
     }
     @DeleteMapping("{myId}")
     public JournalEntry deleteJournalEntryById(@PathVariable Long myId){
-        return JournalEntries.remove(myId);
+        return null;
     }
     @PutMapping("{myId}")
     public JournalEntry updateJournalEntryById(@RequestBody JournalEntry myEntry){
-        return JournalEntries.put(myEntry.getId(), myEntry);
+        return null;
     }
     @PatchMapping("{myId}")
     public JournalEntry patchJournalEntryById(@PathVariable Long myId, @RequestBody JournalEntry myEntry){
-        JournalEntry existingEntry = JournalEntries.get(myId);
-        if(myEntry.getContent() != null){
-            existingEntry.setContent(myEntry.getContent());
-        }
-        if(myEntry.getTitle() != null){
-            existingEntry.setTitle(myEntry.getTitle());
-        }
-        JournalEntries.put(myId, existingEntry);
-        return JournalEntries.get(myId);
+       return null;
     }
 }
