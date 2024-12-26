@@ -15,6 +15,16 @@ public class JournalEntry {
     private String content;
     private LocalDateTime date;
 
+    @Override
+    public String toString() {
+        return "JournalEntry{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", date=" + date +
+                '}';
+    }
+
     public LocalDateTime getDate() {
         return date;
     }
