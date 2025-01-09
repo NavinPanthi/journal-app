@@ -28,4 +28,19 @@ public class UserController {
     public void createUser(@RequestBody User user){
         userService.saveEntry(user);
     }
+    @PutMapping("{userName}")
+    public ResponseEntity<User> updateUserByUsername(@RequestBody User newUser, @PathVariable String userName){
+        try {
+            User oldUser = userService.findByUserName(userName);
+            if (oldUser != null) {
+                oldUser.setUserName(newUser.getUserName());
+                oldUser.setPassword(newUser.getPassword());
+                userService.saveEntry(oldUser);
+                return new ResponseEntity<>(oldUser, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
