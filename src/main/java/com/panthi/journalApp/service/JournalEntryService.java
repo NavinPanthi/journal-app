@@ -21,6 +21,8 @@ public class JournalEntryService {
     private UserService userService;
     @Transactional
     public void saveEntry(JournalEntry journalEntry, String userName){
+        try{
+
         User user = userService.findByUserName(userName);
         journalEntry.setDate(LocalDateTime.now());
         JournalEntry saved = journalEntryRepository.save(journalEntry);
@@ -37,6 +39,10 @@ public class JournalEntryService {
             user.getJournalEntries().add(saved);
             user.setUserName(null);
             userService.saveEntry(user);
+        }
+        }
+        catch (Exception e){
+            System.out.println(e);
         }
     }
     public List<JournalEntry> getAll(){
