@@ -37,7 +37,6 @@ public class JournalEntryService {
 
         if (!entryExists) {  // Only add if it doesn't exist
             user.getJournalEntries().add(saved);
-            user.setUserName(null);
             userService.saveEntry(user);
         }
         }
