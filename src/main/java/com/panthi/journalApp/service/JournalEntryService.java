@@ -22,11 +22,10 @@ public class JournalEntryService {
     @Transactional
     public void saveEntry(JournalEntry journalEntry, String userName){
         try{
-
         User user = userService.findByUserName(userName);
         journalEntry.setDate(LocalDateTime.now());
         JournalEntry saved = journalEntryRepository.save(journalEntry);
-        // Check if entry doesn't exist before adding
+        // Check if entry doesn't exist before adding. This ensure there are unique entry with unique object id of journal_entries.
         boolean entryExists = user.getJournalEntries().stream()
                 .anyMatch(entry ->
                         entry != null &&
@@ -35,7 +34,7 @@ public class JournalEntryService {
                                 entry.getId().equals(saved.getId())
                 );
 
-        if (!entryExists) {  // Only add if it doesn't exist
+        if (!entryExists) {
             user.getJournalEntries().add(saved);
             userService.saveEntry(user);
         }
