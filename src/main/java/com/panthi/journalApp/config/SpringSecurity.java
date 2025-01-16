@@ -22,7 +22,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SpringSecurity {
 
-
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
@@ -33,7 +32,7 @@ public class SpringSecurity {
 
         return http.authorizeHttpRequests(request -> request
                         .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/journal/**").authenticated()
+                        .requestMatchers("/journal/**", "/user/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())
@@ -46,7 +45,6 @@ public class SpringSecurity {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

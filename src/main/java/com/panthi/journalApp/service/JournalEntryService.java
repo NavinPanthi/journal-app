@@ -19,52 +19,60 @@ public class JournalEntryService {
 
     @Autowired
     private UserService userService;
-    @Transactional
-    public void saveEntry(JournalEntry journalEntry, String userName){
-        try{
-        User user = userService.findByUserName(userName);
-        journalEntry.setDate(LocalDateTime.now());
-        JournalEntry saved = journalEntryRepository.save(journalEntry);
-        // Check if entry doesn't exist before adding. This ensure there are unique entry with unique object id of journal_entries.
-        boolean entryExists = user.getJournalEntries().stream()
-                .anyMatch(entry ->
-                        entry != null &&
-                                entry.getId() != null &&
-                                saved.getId() != null &&
-                                entry.getId().equals(saved.getId())
-                );
 
-        if (!entryExists) {
-            user.getJournalEntries().add(saved);
-            userService.saveEntry(user);
-        }
-        }
-        catch (Exception e){
+    @Transactional
+    public void saveEntry(JournalEntry journalEntry, String userName) {
+        try {
+            User user = userService.findByUserName(userName);
+            journalEntry.setDate(LocalDateTime.now());
+            JournalEntry saved = journalEntryRepository.save(journalEntry);
+            // Check if entry doesn't exist before adding. This ensure there are unique entry with unique object id of journal_entries.
+            boolean entryExists = user.getJournalEntries().stream()
+                    .anyMatch(entry ->
+                            entry != null &&
+                                    entry.getId() != null &&
+                                    saved.getId() != null &&
+                                    entry.getId().equals(saved.getId())
+                    );
+
+            if (!entryExists) {
+                user.getJournalEntries().add(saved);
+                userService.saveUser(user);
+            }
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
-    public List<JournalEntry> getAll(){
+
+    public List<JournalEntry> getAll() {
         return journalEntryRepository.findAll();
     }
-    public Optional<JournalEntry> getById(ObjectId myId){
+
+    public Optional<JournalEntry> getById(ObjectId myId) {
         return journalEntryRepository.findById(myId);
     }
-    public void deleteById(ObjectId myId){
+
+    public void deleteById(ObjectId myId) {
         List<User> users = userService.getAll();
-        for(User user : users){
-            List <JournalEntry> journalEntriesOfUser = user.getJournalEntries();
+        for (User user : users) {
+            List<JournalEntry> journalEntriesOfUser = user.getJournalEntries();
             journalEntriesOfUser.removeIf(entry ->
                     entry != null && entry.getId() != null && entry.getId().equals(myId)
             );
             user.setJournalEntries(journalEntriesOfUser);
-            userService.saveEntry(user);
+            userService.saveUser(user);
         }
         journalEntryRepository.deleteById(myId);
     }
-    public void deleteJournalEntryOfUserNameById(ObjectId myId, String  userName){
+
+    public boolean deleteJournalEntryOfUserNameById(ObjectId myId, String userName) {
         User user = userService.findByUserName(userName);
-        user.getJournalEntries().removeIf(x->x.getId().equals(myId));
-        userService.saveEntry(user);
-        journalEntryRepository.deleteById(myId);
+        boolean removed = user.getJournalEntries().removeIf(x -> x.getId().equals(myId));
+        if (removed) {
+            userService.saveUser(user);
+            journalEntryRepository.deleteById(myId);
+            return true;
+        }
+        return false;
     }
 }
